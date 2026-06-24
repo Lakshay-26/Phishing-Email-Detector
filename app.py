@@ -11,7 +11,8 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-DB_PATH = 'phishguard.db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, 'phishguard.db')
 GOOGLE_SAFE_BROWSING_API_KEY = os.environ.get('GOOGLE_SAFE_BROWSING_API_KEY', '')
 
 def init_db():
