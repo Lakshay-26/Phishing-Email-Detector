@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard | Phishing Email Detector</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="bg-layer" class="background-canvas"></div>
+
+    <div class="app-container">
+        <nav class="sidebar">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                <span>PhishGuard</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-tab="dashboard">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Dashboard
+                </li>
+                <li data-tab="analyze">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    Analyze Email
+                </li>
+                <li data-tab="history">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    History
+                </li>
+                <li data-tab="awareness">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    Awareness
+                </li>
+                <li data-tab="quiz">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                    Phishing Quiz
+                </li>
+                <li data-tab="database">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                    Threat Database
+                </li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <header class="topbar">
+                <button id="theme-toggle" class="icon-btn" title="Toggle Theme">
+                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <span>Admin User</span>
+                </div>
+            </header>
+
+            <div class="content-area">
+                
+                <section id="dashboard" class="tab-content active">
+                    <h1>Dashboard Overview</h1>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-title">Total Analyzed</div>
+                            <div class="stat-value" id="stat-total">0</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <div class="stat-title">Threats Detected</div>
+                            <div class="stat-value" id="stat-threats">0</div>
+                        </div>
+                        <div class="stat-card safe">
+                            <div class="stat-title">Clean Emails</div>
+                            <div class="stat-value" id="stat-clean">0</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="analyze" class="tab-content">
+                    <h1>Analyze Email</h1>
+                    <div class="form-container glass-panel">
+
+                        <div class="input-group">
+                            <label for="sender">Sender Email Address</label>
+                            <input type="email" id="sender" placeholder="e.g., support@paypal.com">
+                        </div>
+                        <div class="input-group">
+                            <label for="subject">Email Subject</label>
+                            <input type="text" id="subject" placeholder="e.g., Urgent: Verify Your Account">
+                        </div>
+                        <div class="input-group">
+                            <label for="body">Email Content</label>
+                            <textarea id="body" rows="8" placeholder="Paste the email content here..."></textarea>
+                        </div>
+                        <div class="input-group">
+                            <label for="attachment">Simulate Attachment Upload (Scanner)</label>
+                            <input type="file" id="attachment">
+                        </div>
+                        <button id="analyze-btn" class="primary-btn">Analyze Now</button>
+                    </div>
+
+                    <div id="results-container" class="results-container hidden">
+                        <h2>Analysis Result</h2>
+                        <div class="results-grid">
+                            <div class="result-card score-card glass-panel" id="score-card">
+                                <div class="score-header">
+                                    <svg viewBox="0 0 24 24" width="32" height="32" stroke="currentColor" stroke-width="2" fill="none" id="score-icon"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                                    <h3 id="risk-level">HIGH RISK</h3>
+                                </div>
+                                <div class="score-display">
+                                    <span class="score-number" id="score-value">85</span>
+                                    <span class="score-max">/100</span>
+                                </div>
+                                <div class="score-gauge">
+                                    <div class="score-gauge-fill" id="score-gauge-fill"></div>
+                                </div>
+                                <p id="score-message">This email looks suspicious!</p>
+                            </div>
+                            
+                            <div class="result-card glass-panel details-card">
+                                <h3>Email Details</h3>
+                                <p><strong>From:</strong> <span id="res-sender"></span></p>
+                                <p><strong>Subject:</strong> <span id="res-subject"></span></p>
+                                <p><strong>SPF/DKIM:</strong> <span id="res-spf"></span></p>
+                                <p><strong>Attachment:</strong> <span id="res-attach"></span></p>
+                            </div>
+
+                            <div class="result-card glass-panel findings-card">
+                                <h3>Suspicious Elements Found</h3>
+                                <div id="findings-list" class="findings-container">
+                                </div>
+                            </div>
+
+                            <div class="result-card glass-panel recommendations-card">
+                                <h3>Recommendations</h3>
+                                <ul id="recommendations-list" class="recommendations-list">
+                                </ul>
+                            </div>
+                            
+                            <div class="result-card glass-panel highlighted-viewer-card" style="grid-column: span 2;">
+                                <h3>Highlighted Email Viewer</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem;">Suspicious elements are highlighted below to show you exactly what triggered the warnings.</p>
+                                <div id="highlighted-content" class="highlighted-content"></div>
+                            </div>
+                        </div>
+                        <button id="new-analysis-btn" class="secondary-btn">New Analysis</button>
+                    </div>
+                </section>
+
+                <section id="history" class="tab-content">
+                    <h1>Analysis History</h1>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">Click on any entry below to review the full analysis and see exactly what was flagged.</p>
+                    <div class="history-list glass-panel" id="history-list">
+                    </div>
+                </section>
+
+                <div id="history-detail-overlay" class="detail-overlay hidden">
+                    <div class="detail-modal glass-panel">
+                        <button id="close-detail-btn" class="detail-close-btn">&times;</button>
+                        <h2 style="margin-bottom: 1.5rem;">Detailed Analysis Report</h2>
+                        <div class="detail-score-bar">
+                            <div class="detail-score-header">
+                                <span id="detail-risk-label" class="detail-risk-label">HIGH RISK</span>
+                                <span id="detail-score-num" class="detail-score-num">85/100</span>
+                            </div>
+                            <div class="score-gauge">
+                                <div class="score-gauge-fill" id="detail-gauge-fill"></div>
+                            </div>
+                        </div>
+                        <div class="detail-meta">
+                            <div class="detail-meta-item"><strong>From:</strong> <span id="detail-sender"></span></div>
+                            <div class="detail-meta-item"><strong>Subject:</strong> <span id="detail-subject"></span></div>
+                            <div class="detail-meta-item"><strong>Date:</strong> <span id="detail-date"></span></div>
+                            <div class="detail-meta-item"><strong>SPF/DKIM:</strong> <span id="detail-spf"></span></div>
+                            <div class="detail-meta-item"><strong>Attachment:</strong> <span id="detail-attachment"></span></div>
+                        </div>
+                        <div class="detail-section">
+                                <h3 style="margin-bottom: 0.75rem; color: var(--danger-color);">Issues Found</h3>
+                                <div id="detail-findings" class="findings-container"></div>
+                            </div>
+                        <div class="detail-section" id="detail-body-section">
+                            <h3 style="margin-bottom: 0.75rem; color: var(--text-secondary);">Email Body</h3>
+                            <div id="detail-body" class="highlighted-content"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <section id="awareness" class="tab-content">
+                    <h1>Security Awareness</h1>
+                    <div class="awareness-grid">
+                        <div class="glass-panel awareness-card">
+                            <h3>Spotting Fake Senders</h3>
+                            <p>Always check the sender's email address carefully. Phishers often use addresses that look similar to official ones (e.g., support@paypaI.com instead of paypal.com) or use generic public domains like @gmail.com for official business.</p>
+                        </div>
+                        <div class="glass-panel awareness-card">
+                            <h3>Hover Before You Click</h3>
+                            <p>Hover your mouse cursor over links in the email to see the actual destination URL. If the URL looks strange, contains random characters, or uses an IP address instead of a domain name, do not click it.</p>
+                        </div>
+                        <div class="glass-panel awareness-card">
+                            <h3>Beware of Urgency</h3>
+                            <p>Phishing emails often try to create a sense of panic or urgency to make you act quickly without thinking. Phrases like "immediate action required" or "your account will be suspended" are common red flags.</p>
+                        </div>
+                        <div class="glass-panel awareness-card">
+                            <h3>Never Share Credentials</h3>
+                            <p>Legitimate organizations will never ask for your password, PIN, or full Social Security number via email. Treat any email requesting this information as highly suspicious.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="quiz" class="tab-content">
+                    <h1>User Awareness Quiz</h1>
+                    <div class="quiz-container glass-panel">
+                        <div id="quiz-start">
+                            <h2>Test Your Phishing Knowledge</h2>
+                            <p style="color: var(--text-secondary); margin: 1rem 0 2rem 0;">Take this quick quiz to see how well you can identify phishing threats.</p>
+                            <button id="start-quiz-btn" class="primary-btn" style="max-width: 200px;">Start Quiz</button>
+                        </div>
+                        <div id="quiz-question-container" class="hidden">
+                            <h3 id="question-text" style="margin-bottom: 1.5rem;"></h3>
+                            <div id="options-container" class="options-container"></div>
+                            <div id="quiz-feedback" style="margin-top: 1.5rem; font-weight: 500; height: 24px;"></div>
+                            <button id="next-question-btn" class="secondary-btn hidden">Next Question</button>
+                        </div>
+                        <div id="quiz-result" class="hidden" style="text-align: center; padding: 2rem 0;">
+                            <h2 style="margin-bottom: 1rem;">Quiz Complete!</h2>
+                            <div class="score-number" id="final-quiz-score" style="color: var(--accent-color); margin-bottom: 1rem;"></div>
+                            <p id="quiz-final-message" style="color: var(--text-secondary);"></p>
+                            <button id="restart-quiz-btn" class="primary-btn" style="max-width: 200px; margin-top: 2rem;">Retake Quiz</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="database" class="tab-content">
+                    <h1>Threat Intelligence Database</h1>
+                    <p style="color: var(--text-secondary); margin-bottom: 2rem;">Live feed of known malicious domains, IPs, and keywords extracted from recent global phishing campaigns.</p>
+                    <div class="glass-panel">
+                        <table style="width: 100%; text-align: left; border-collapse: collapse;">
+                            <thead>
+                                <tr style="border-bottom: 1px solid var(--glass-border);">
+                                    <th style="padding: 1rem;">Type</th>
+                                    <th style="padding: 1rem;">Value / IOC</th>
+                                    <th style="padding: 1rem;">Severity</th>
+                                    <th style="padding: 1rem;">Date Added</th>
+                                </tr>
+                            </thead>
+                            <tbody id="threats-list"></tbody>
+                        </table>
+                    </div>
+                </section>
+                
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
