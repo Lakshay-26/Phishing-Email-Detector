@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const API_BASE = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://localhost:5000/api'
-        : 'https://YOUR_USERNAME.pythonanywhere.com/api';
+        : 'https://Lakshay18.pythonanywhere.com/api';
 
     let cachedHistory = [];
 
