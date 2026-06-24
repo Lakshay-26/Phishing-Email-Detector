@@ -1,75 +1,113 @@
-# PhishGuard | Phishing Email Detector & Security Awareness System
+# 🛡️ PhishGuard | Phishing Email Detector & Awareness System
 
-**PhishGuard** is a premium, full-stack cybersecurity application designed to analyze emails for phishing signals, track analysis history, compile live threat intelligence, and educate users about digital threats through interactive quizzes. Developed as a **ReadyNest Week 2 Assignment**.
-
----
-
-## 🚀 Key Features
-
-*   **Multi-Layered Heuristic Analysis Engine**: Inspects emails for suspicious indicators including deceptive typo-substituted domains, urgency cues, requests for credentials, raw IP addresses, and link shorteners.
-*   **Automatic SPF Verification**: Queries real DNS records to authenticate sender domains and flag spoofed emails.
-*   **Google Safe Browsing Integration**: Queries Google’s real-time threat intelligence list to verify URL reputations.
-*   **Detailed Threat Reporting & Contextual Highlighting**: Uses an index-safe offset highlighter to display flagged threat triggers directly within the email body on both the results card and history detail overlays.
-*   **Live Threat Intelligence Feed**: Dynamically aggregates known malicious assets (IPs, keywords, domains, file extensions) from an SQLite database and presents them in a live database tab.
-*   **Security Awareness Quiz**: An interactive training module backed by a 50-question bank utilizing the Fisher-Yates shuffle algorithm to generate unique learning sessions.
-*   **Glassmorphic Design System**: Supports interactive responsive design, smooth custom gauge animations, and real photography backgrounds styled for both Deep Space Purple (Dark) and Warm Pearl (Light) themes.
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.8%2B-blue?style=for-the-badge&logo=python&logoColor=yellow" alt="Python Version">
+  <img src="https://img.shields.io/badge/Flask-2.0%2B-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask Version">
+  <img src="https://img.shields.io/badge/SQLite-3-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite">
+  <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5">
+  <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3">
+  <img src="https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript">
+</p>
 
 ---
 
-## 🛠️ Tech Stack
+**PhishGuard** is an interactive, full-stack cybersecurity application designed to scan email components (sender headers, email bodies, and file attachments) for phishing indicators. It computes real-time threat scores, displays detailed, color-coded findings, aggregates a live threat intelligence feed, and offers a cybersecurity awareness quiz to train users.
 
-*   **Frontend**: HTML5, Vanilla CSS3, Modern ES6+ JavaScript
-*   **Backend**: Python, Flask, Flask-CORS
-*   **DNS Resolution**: Dnspython resolver
-*   **Database**: SQLite (`phishguard.db`)
+Developed as a **ReadyNest Week 2 Project**.
 
 ---
 
-## 💻 Installation & Local Run
+## 🔍 Architecture & Data Flow
 
-### Prerequisites
-*   Python 3.8 or higher installed on your system.
-
-### Steps
-1.  **Clone the Repository**:
-    ```bash
-    git clone <your-repository-url>
-    cd <repository-directory>
-    ```
-
-2.  **Install Python Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3.  **Run the Flask Server**:
-    ```bash
-    python app.py
-    ```
-    The server will startup in debug mode, running locally on `http://127.0.0.1:5000`.
-
-4.  **Launch the App UI**:
-    Open the `index.html` file in your preferred web browser.
-
----
-
-## 🔒 Configuration (Google Safe Browsing API)
-
-To enable live Google Safe Browsing URL checking:
-1.  Obtain an API key from the [Google Cloud Console](https://console.cloud.google.com/).
-2.  Open `app.py`.
-3.  Assign your API key to the `GOOGLE_SAFE_BROWSING_API_KEY` constant (or set the environment variable).
-
----
-
-## 📁 File Structure
+When an email is analyzed by PhishGuard, it undergoes a multi-layer inspection:
 
 ```text
-├── app.py              # Flask server and heuristics detection engine
-├── index.html          # Dashboard, Analyze, History, Awareness, and Quiz tabs
-├── style.css           # Styling rules for glassmorphism, animations, and dark/light modes
-├── script.js           # Client-side routing, quiz controller, history handlers, and highlighting
-├── requirements.txt    # Python dependency list
-├── .gitignore          # Exclusions for local databases, caches, and IDE folders
-└── README.md           # Documentation
+[ User Email Input ] ──> [ Heuristic Analyzer ] ──> [ DNS SPF Query ]
+                                  │                       │
+                                  ▼                       ▼
+                         [ Keyword Parser ]      [ Domain Check ]
+                                  │                       │
+                                  ▼                       ▼
+                      [ Safe Browsing Check ] ──> [ Scoring Engine ] ──> [ SQLite DB ]
+                                                                               │
+                                                                               ▼
+                                                                     [ Live UI Display ]
 ```
+
+---
+
+## 📊 Heuristic Scoring Engine Matrix
+
+The Python Flask backend parses email inputs and applies rules to calculate a cumulative risk score (capped at `100` max):
+
+| Trigger Category | Suspicious Indicator | Risk Weight | Severity Level |
+| :--- | :--- | :---: | :---: |
+| **Authentication** | SPF Record Failure / Domain Spoofing | `+35` | **HIGH** |
+| **Impersonation** | Typo-substituted domains (e.g. `paypa1.com`) | `+40` | **HIGH** |
+| **Impersonation** | Free domain (Gmail/Yahoo) claiming official company identity | `+30` | **HIGH** |
+| **File Safety** | Executable attachments (`.exe`, `.scr`, `.vbs`, `.bat`, etc.) | `+50` | **CRITICAL** |
+| **File Safety** | Compressed archive attachments (`.zip`, `.rar`, `.7z`) | `+15` | **MEDIUM** |
+| **Behavioral** | Solicitation of credentials/SSN/credit cards | `+25` | **HIGH** |
+| **Behavioral** | Urgency triggers (e.g. "locked", "within 24 hours") | `+12 / kw` | **MEDIUM** |
+| **Link Integrity** | Raw IP addresses in URL links | `+40` | **HIGH** |
+| **Link Integrity** | Masked URL shorteners (`bit.ly`, `tinyurl.com`, etc.) | `+20` | **MEDIUM** |
+| **Blacklist** | Google Safe Browsing confirmed malicious URL | `+80` | **CRITICAL** |
+
+*   **Low Risk (`0 - 29`)**: Displayed in emerald green. Safe to read, but vigilance is advised.
+*   **Medium Risk (`30 - 69`)**: Displayed in amber. Suspicious elements found, proceed with caution.
+*   **High Risk (`70 - 100`)**: Displayed in crimson. Strong indicators of a phishing attempt.
+
+---
+
+## 🌟 Premium Features
+
+### 1. Visual Finding & Explanation Cards
+No more basic bullet points. Each detected vulnerability is rendered as a stylized card indicating:
+*   Severity badge (Critical, High, Medium, Low)
+*   The exact item flagged (e.g. the deceptive link)
+*   A clear explanation of what the threat means and how it can harm your system
+
+### 2. Contextual Email Body Highlighting
+A robust parser scans the email body and highlights danger zones directly in the text reader (red for critical/high threats, yellow for medium/warnings) so users see exactly what triggered the scanner.
+
+### 3. Live Threat Database Tab
+Stores and renders live indicators of compromise (IOCs) from SQLite. Re-seeds fresh phishing domains, keywords, and malicious IPs on every backend reload.
+
+### 4. Fisher-Yates Quiz Engine
+An awareness module containing a 50-question database. Every retake shuffles the questions using the Fisher-Yates algorithm, providing 8 completely random challenges to keep training material fresh.
+
+---
+
+## 🛠️ Setup & Running Locally
+
+### Step 1: Clone the Repo
+```bash
+git clone <your-repo-url>
+cd phishguard
+```
+
+### Step 2: Install Python dependencies
+```bash
+pip install -r requirements.txt
+```
+
+### Step 3: Launch the Flask Backend
+```bash
+python app.py
+```
+The server runs on `http://127.0.0.1:5000`. On boot, it automatically initializes or migrates `phishguard.db` and loads threat database values.
+
+### Step 4: Open the Frontend
+Double-click `index.html` in your file explorer to launch the web dashboard.
+
+---
+
+## ⚙️ Google Safe Browsing API Setup
+To activate real-time website reputation scanning:
+1.  Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2.  Enable the **Safe Browsing API**.
+3.  Generate an API Key.
+4.  Define `GOOGLE_SAFE_BROWSING_API_KEY` as an environment variable, or paste it directly in `app.py`:
+    ```python
+    GOOGLE_SAFE_BROWSING_API_KEY = "your-api-key-here"
+    ```
