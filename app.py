@@ -10,7 +10,7 @@ from datetime import datetime
 app = Flask(__name__)
 CORS(app)
 
-DB_PATH = 'phishguard.db'
+DB_PATH = '/data/phishguard.db'
 GOOGLE_SAFE_BROWSING_API_KEY = ''
 
 def init_db():
